@@ -1,0 +1,26 @@
+{
+  "name": "upwork-browser",
+  "version": "1.0.0",
+  "description": "Upwork Browser - Native iOS app for browsing Upwork jobs",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx cap run ios",
+    "build": "echo 'Build completed'",
+    "ios": "npx cap run ios",
+    "android": "npx cap run android",
+    "sync": "npx cap sync"
+  },
+  "keywords": [
+    "upwork",
+    "ios",
+    "capacitor"
+  ],
+  "author": "Daniel McShan",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/cli": "^6.0.0"
+  },
+  "devDependencies": {}
+}

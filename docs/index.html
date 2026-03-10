@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upwork Cover Letter Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Upwork Browser</title>
     <style>
         * {
             margin: 0;
@@ -22,13 +22,30 @@
         .header {
             background: #14a800;
             color: white;
-            padding: 1rem 2rem;
+            padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
+        }
+
+        .header .refresh-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .header .refresh-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .container {
@@ -40,7 +57,6 @@
         .upwork-panel {
             flex: 1;
             background: white;
-            border-right: 1px solid #ddd;
             display: flex;
             flex-direction: column;
         }
@@ -49,73 +65,6 @@
             flex: 1;
             border: none;
             width: 100%;
-        }
-
-        .iframe-warning {
-            padding: 2rem;
-            text-align: center;
-            color: #333;
-        }
-
-        .iframe-warning h3 {
-            color: #14a800;
-            margin-bottom: 1rem;
-        }
-
-        .iframe-warning p {
-            margin-bottom: 1rem;
-        }
-
-        .iframe-warning ol {
-            text-align: left;
-            margin-left: 2rem;
-        }
-
-        .iframe-warning a {
-            color: #0073b1;
-        }
-
-        .app-options {
-            text-align: left;
-            margin-top: 1.5rem;
-        }
-
-        .app-options p {
-            margin-bottom: 0.5rem;
-        }
-
-        .app-options strong {
-            color: #333;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .app-link {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #14a800;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            transition: background 0.2s;
-        }
-
-        .app-link:hover {
-            background: #108900;
-        }
-
-        .note {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-        }
-
-        .app-options hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 1.5rem 0;
         }
 
         .generator-panel {
@@ -258,26 +207,13 @@
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Upwork Cover Letter Generator</h1>
+        <h1>🚀 Upwork Browser</h1>
+        <button class="refresh-btn" onclick="refreshUpwork()">↻ Refresh</button>
     </div>
 
     <div class="container">
         <div class="upwork-panel">
-            <div class="iframe-warning">
-                <h3>Upwork Job Browser</h3>
-                <p>Upwork blocks iframes for security. Please:</p>
-                <div class="app-options">
-                    <p><strong>Option 1: Open in Upwork App</strong></p>
-                    <a href="upwork://nx/search/jobs" class="app-link">Open in Upwork App</a>
-                    <p class="note">If you have the Upwork app installed, this will open it directly</p>
-                    
-                    <hr>
-                    
-                    <p><strong>Option 2: Open in Browser</strong></p>
-                    <a href="https://www.upwork.com/nx/search/jobs/" target="_blank" class="app-link">Open in Browser</a>
-                    <p class="note">Find a job, copy the description, then paste it in the generator panel</p>
-                </div>
-            </div>
+            <iframe id="upworkFrame" src="https://www.upwork.com/nx/search/jobs/" title="Upwork Jobs"></iframe>
         </div>
 
         <div class="generator-panel">
@@ -313,5 +249,12 @@
 
     <script src="config.js"></script>
     <script src="app.js"></script>
+    <script>
+        // Refresh the Upwork iframe
+        function refreshUpwork() {
+            const frame = document.getElementById('upworkFrame');
+            frame.src = frame.src;
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+{
+  "appId": "com.dcmcshan.upwork",
+  "appName": "Upwork Browser",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "ios": {
+    "scheme": "UpworkBrowser",
+    "iosXcodeProject": "ios/App",
+    "iosXcodeProjectPath": "ios/App",
+    "iosXcodeProjectIsWorkspace": false
+  },
+  "plugins": {
+    "Capacitor": {
+      "keepAlive": true
+    }
+  }
+}
