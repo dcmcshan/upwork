@@ -1,0 +1,265 @@
+#!/usr/bin/env python3
+"""
+Upwork Job Monitor CLI - Unified command-line interface
+"""
+import sys
+import argparse
+import logging
+from upwork_job_monitor import UpworkJobMonitor
+from job_analytics import JobAnalytics
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+def cmd_search(args):
+    """Execute search command."""
+    monitor = UpworkJobMonitor(output_file=args.output)
+    
+    # Test connection
+    if not monitor.client.test_connection():
+        logger.error("Connection failed. Check your credentials.")
+        return 1
+    
+    # Run search
+    if args.continuous:
+        logger.info(f"Starting continuous monitoring (every {args.interval} minutes)")
+        monitor.run_continuous_monitor(interval_minutes=args.interval)
+    else:
+        new_count, updated_count = monitor.search_and_monitor(
+            query=args.query,
+            page_size=args.limit
+        )
+        logger.info(f"Search complete: {new_count} new, {updated_count} updated")
+        
+        # Generate report if requested
+        if args.report:
+            monitor.generate_report(output_format=args.report)
+    
+    return 0
+
+
+def cmd_filter(args):
+    """Execute filter command."""
+    monitor = UpworkJobMonitor(output_file=args.input)
+    
+    if not monitor.jobs_cache:
+        logger.error(f"No jobs found in {args.input}. Run search first.")
+        return 1
+    
+    # Apply filters
+    if args.skill:
+        jobs = monitor.get_jobs_by_skill(args.skill)
+        logger.info(f"Found {len(jobs)} jobs requiring '{args.skill}'")
+    elif args.min_rate or args.max_rate:
+        jobs = monitor.get_jobs_by_budget_range(
+            min_amount=args.min_rate,
+            max_amount=args.max_rate,
+            job_type=args.job_type
+        )
+        logger.info(f"Found {len(jobs)} jobs in budget range")
+    else:
+        jobs = list(monitor.jobs_cache.values())
+    
+    # Display results
+    if args.count:
+        print(f"Total matching jobs: {len(jobs)}")
+    elif args.list:
+        for i, job in enumerate(jobs[:args.limit], 1):
+            budget = job.get('budget', {})
+            rate = budget.get('hourly_rate_min', 0) or budget.get('amount', 0)
+            print(f"{i}. {job['title']}")
+            print(f"   Rate: ${rate} ({budget.get('type', 'Unknown')})")
+            print(f"   Skills: {', '.join(job.get('skills', [])[:5])}")
+            print(f"   URL: {job.get('url', 'N/A')}\n")
+    
+    return 0
+
+
+def cmd_analyze(args):
+    """Execute analyze command."""
+    analytics = JobAnalytics(jobs_file=args.input)
+    
+    if not analytics.jobs:
+        logger.error(f"No jobs found in {args.input}. Run search first.")
+        return 1
+    
+    if args.skill:
+        # Analyze specific skill
+        skill_pay = analytics.skill_pay_correlation()
+        if args.skill in skill_pay:
+            stats = skill_pay[args.skill]
+            print(f"\nSkill Analysis: {args.skill}")
+            print(f"{'='*60}")
+            print(f"Jobs found:    {stats['job_count']}")
+            print(f"Average rate:  ${stats['avg_rate']:.2f}/hr")
+            print(f"Rate range:    ${stats['min_rate']:.2f} - ${stats['max_rate']:.2f}")
+            print(f"Median rate:   ${stats['median_rate']:.2f}")
+        else:
+            logger.error(f"No data found for skill: {args.skill}")
+            return 1
+    else:
+        # Full insights report
+        report = analytics.generate_insights_report()
+        print(report)
+    
+    # Export if requested
+    if args.export:
+        output_file = analytics.export_insights_json(args.export)
+        logger.info(f"Insights exported to: {output_file}")
+    
+    return 0
+
+
+def cmd_test(args):
+    """Execute test command."""
+    from upwork_api_client import UpworkAPIClient
+    
+    client = UpworkAPIClient()
+    
+    if client.test_connection():
+        print("✓ Connection successful!")
+        return 0
+    else:
+        print("✗ Connection failed. Check your credentials.")
+        return 1
+
+
+def cmd_stats(args):
+    """Execute stats command."""
+    monitor = UpworkJobMonitor(output_file=args.input)
+    
+    if not monitor.jobs_cache:
+        logger.error(f"No jobs found in {args.input}")
+        return 1
+    
+    total = len(monitor.jobs_cache)
+    
+    # Count by type
+    hourly = sum(1 for j in monitor.jobs_cache.values() 
+                 if 'hourly' in j.get('budget', {}).get('type', '').lower())
+    fixed = sum(1 for j in monitor.jobs_cache.values() 
+                if 'fixed' in j.get('budget', {}).get('type', '').lower())
+    
+    # Skills
+    all_skills = set()
+    for job in monitor.jobs_cache.values():
+        all_skills.update(job.get('skills', []))
+    
+    print(f"\nJob Cache Statistics: {args.input}")
+    print(f"{'='*60}")
+    print(f"Total jobs:      {total}")
+    print(f"Hourly jobs:     {hourly} ({hourly/total*100:.1f}%)")
+    print(f"Fixed jobs:      {fixed} ({fixed/total*100:.1f}%)")
+    print(f"Unique skills:   {len(all_skills)}")
+    print()
+    
+    return 0
+
+
+def main():
+    """Main CLI entry point."""
+    parser = argparse.ArgumentParser(
+        description='Upwork Job Monitor - Track jobs, skills, and pay rates',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Search for jobs
+  upwork search --query "python developer"
+  
+  # Continuous monitoring
+  upwork search --continuous --interval 60
+  
+  # Filter by skill
+  upwork filter --skill python --list
+  
+  # Analyze job data
+  upwork analyze
+  
+  # Get statistics
+  upwork stats
+  
+  # Test connection
+  upwork test
+
+For more information, see USER_GUIDE.md
+        """
+    )
+    
+    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+    
+    # Search command
+    search_parser = subparsers.add_parser('search', help='Search for jobs')
+    search_parser.add_argument('--query', type=str, help='Search query')
+    search_parser.add_argument('--continuous', action='store_true', 
+                              help='Run continuous monitoring')
+    search_parser.add_argument('--interval', type=int, default=60,
+                              help='Minutes between searches (default: 60)')
+    search_parser.add_argument('--output', type=str, default='upwork_jobs.json',
+                              help='Output file (default: upwork_jobs.json)')
+    search_parser.add_argument('--report', choices=['console', 'json', 'csv'],
+                              help='Generate report after search')
+    search_parser.add_argument('--limit', type=int, default=50,
+                              help='Max results per search (default: 50)')
+    search_parser.set_defaults(func=cmd_search)
+    
+    # Filter command
+    filter_parser = subparsers.add_parser('filter', help='Filter cached jobs')
+    filter_parser.add_argument('--input', type=str, default='upwork_jobs.json',
+                              help='Input file (default: upwork_jobs.json)')
+    filter_parser.add_argument('--skill', type=str, help='Filter by skill')
+    filter_parser.add_argument('--min-rate', type=float, help='Minimum rate')
+    filter_parser.add_argument('--max-rate', type=float, help='Maximum rate')
+    filter_parser.add_argument('--job-type', choices=['hourly', 'fixed'],
+                              help='Job type')
+    filter_parser.add_argument('--list', action='store_true',
+                              help='List matching jobs')
+    filter_parser.add_argument('--count', action='store_true',
+                              help='Show count only')
+    filter_parser.add_argument('--limit', type=int, default=20,
+                              help='Max jobs to display (default: 20)')
+    filter_parser.set_defaults(func=cmd_filter)
+    
+    # Analyze command
+    analyze_parser = subparsers.add_parser('analyze', help='Analyze job data')
+    analyze_parser.add_argument('--input', type=str, default='upwork_jobs.json',
+                               help='Input file (default: upwork_jobs.json)')
+    analyze_parser.add_argument('--skill', type=str, 
+                               help='Analyze specific skill')
+    analyze_parser.add_argument('--export', type=str,
+                               help='Export insights to JSON file')
+    analyze_parser.set_defaults(func=cmd_analyze)
+    
+    # Test command
+    test_parser = subparsers.add_parser('test', help='Test API connection')
+    test_parser.set_defaults(func=cmd_test)
+    
+    # Stats command
+    stats_parser = subparsers.add_parser('stats', help='Show cache statistics')
+    stats_parser.add_argument('--input', type=str, default='upwork_jobs.json',
+                             help='Input file (default: upwork_jobs.json)')
+    stats_parser.set_defaults(func=cmd_stats)
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        return 1
+    
+    # Execute command
+    try:
+        return args.func(args)
+    except KeyboardInterrupt:
+        print("\n\nInterrupted by user")
+        return 130
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,29 @@
+{
+  "name": "upwork",
+  "version": "1.0.0",
+  "description": "A comprehensive toolkit for monitoring Upwork job postings, tracking skills and pay rates, and automating job applications using the official Upwork API.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcmcshan/upwork.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dcmcshan/upwork/issues"
+  },
+  "homepage": "https://github.com/dcmcshan/upwork#readme",
+  "dependencies": {
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0"
+  }
+}
