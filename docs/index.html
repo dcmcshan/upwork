@@ -75,6 +75,49 @@
             color: #0073b1;
         }
 
+        .app-options {
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+
+        .app-options p {
+            margin-bottom: 0.5rem;
+        }
+
+        .app-options strong {
+            color: #333;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #14a800;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: background 0.2s;
+        }
+
+        .app-link:hover {
+            background: #108900;
+        }
+
+        .note {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .app-options hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 1.5rem 0;
+        }
+
         .generator-panel {
             width: 450px;
             background: white;
@@ -223,12 +266,17 @@
             <div class="iframe-warning">
                 <h3>Upwork Job Browser</h3>
                 <p>Upwork blocks iframes for security. Please:</p>
-                <ol>
-                    <li>Open <a href="https://www.upwork.com/nx/search/jobs/" target="_blank">Upwork in a new tab</a></li>
-                    <li>Find a job you like</li>
-                    <li>Copy the job description</li>
-                    <li>Paste it in the generator panel on the right</li>
-                </ol>
+                <div class="app-options">
+                    <p><strong>Option 1: Open in Upwork App</strong></p>
+                    <a href="upwork://nx/search/jobs" class="app-link">Open in Upwork App</a>
+                    <p class="note">If you have the Upwork app installed, this will open it directly</p>
+                    
+                    <hr>
+                    
+                    <p><strong>Option 2: Open in Browser</strong></p>
+                    <a href="https://www.upwork.com/nx/search/jobs/" target="_blank" class="app-link">Open in Browser</a>
+                    <p class="note">Find a job, copy the description, then paste it in the generator panel</p>
+                </div>
             </div>
         </div>
 
