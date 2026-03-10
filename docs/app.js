@@ -1,46 +1,6 @@
 // Professional background and skills - loaded from config.js
 // If config.js is not loaded, use default values
-const PROFESSIONAL_BACKGROUND = window.PROFESSIONAL_BACKGROUND || {
-    name: "Your Name",
-    title: "Full-Stack Developer & AI/ML Specialist",
-    
-    skills: [
-        "Python", "JavaScript", "TypeScript", "React", "Node.js",
-        "Django", "FastAPI", "PostgreSQL", "MongoDB", "Redis",
-        "AWS", "Docker", "Kubernetes", "CI/CD",
-        "Machine Learning", "AI Integration", "API Development",
-        "Web Scraping", "Automation", "Data Analysis"
-    ],
-    
-    experience: [
-        {
-            role: "Technical Lead",
-            company: "Syzygyx",
-            description: "Led development of AI-powered platforms and automation tools"
-        },
-        {
-            role: "Full-Stack Developer",
-            company: "Various Projects",
-            description: "Built scalable web applications, APIs, and automation systems"
-        }
-    ],
-    
-    projects: [
-        "Upwork Job Monitoring & Analytics System",
-        "AI-powered automation tools",
-        "RESTful API development",
-        "Web scraping and data extraction systems",
-        "Real-time monitoring dashboards"
-    ],
-    
-    strengths: [
-        "Quick learner and problem solver",
-        "Strong communication skills",
-        "Experience with agile development",
-        "Proven track record of delivering quality code",
-        "Self-motivated and detail-oriented"
-    ]
-};
+// Note: config.js defines PROFESSIONAL_BACKGROUND, app.js just uses it
 
 // Generate cover letter using AI-like logic
 async function generateCoverLetter() {

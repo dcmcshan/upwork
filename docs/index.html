@@ -51,6 +51,30 @@
             width: 100%;
         }
 
+        .iframe-warning {
+            padding: 2rem;
+            text-align: center;
+            color: #333;
+        }
+
+        .iframe-warning h3 {
+            color: #14a800;
+            margin-bottom: 1rem;
+        }
+
+        .iframe-warning p {
+            margin-bottom: 1rem;
+        }
+
+        .iframe-warning ol {
+            text-align: left;
+            margin-left: 2rem;
+        }
+
+        .iframe-warning a {
+            color: #0073b1;
+        }
+
         .generator-panel {
             width: 450px;
             background: white;
@@ -196,7 +220,16 @@
 
     <div class="container">
         <div class="upwork-panel">
-            <iframe src="https://www.upwork.com/nx/search/jobs/" title="Upwork Jobs"></iframe>
+            <div class="iframe-warning">
+                <h3>Upwork Job Browser</h3>
+                <p>Upwork blocks iframes for security. Please:</p>
+                <ol>
+                    <li>Open <a href="https://www.upwork.com/nx/search/jobs/" target="_blank">Upwork in a new tab</a></li>
+                    <li>Find a job you like</li>
+                    <li>Copy the job description</li>
+                    <li>Paste it in the generator panel on the right</li>
+                </ol>
+            </div>
         </div>
 
         <div class="generator-panel">
